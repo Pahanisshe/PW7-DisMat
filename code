@@ -1,0 +1,311 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+
+namespace Дискретка_пз7
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Сombinatorics.Task14_2();
+        }
+    }
+
+    class Сombinatorics
+    {
+        private static void swap(int[] a, int i, int j)
+        {
+            int s = a[i];
+            a[i] = a[j];
+            a[j] = s;
+        }
+
+        private static void Print(int[] a, int n, StreamWriter f)
+        {
+            for(int i=0; i < n; i++)
+            {
+                //Console.Write($"{a[i]}\t");
+                f.Write($"{a[i]}\t");
+            }
+            //Console.WriteLine();   
+            f.WriteLine();
+        }
+
+        //9 перестановки
+        private static bool NextSet(int[] a, int n)
+        {
+            int j = n - 2;
+            while (j != -1 && a[j] >= a[j + 1]) j--;
+            if (j == -1)
+                return false;
+            int k = n - 1;
+            while (a[j] >= a[k]) k--;
+            swap(a, j, k);
+            int l = j + 1, r = n - 1;
+            while (l < r)
+                swap(a, l++, r--);
+            return true;
+        }
+
+        public static void Permutations()
+        {
+            Console.Write("Перестановки длины: ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++)
+                a[i] = i + 1;
+            StreamWriter f = new StreamWriter("Permutations.txt");
+            Print(a, n, f);
+            while (NextSet(a, n))
+                Print(a, n, f);
+            f.Close();
+            System.Diagnostics.Process.Start("Permutations.txt");
+        }
+
+        //10 размещения
+        private static bool NextSet(int[] a, int n, int m)
+        {
+            int j;
+            do
+            {
+                j = n - 2;
+                while (j != -1 && a[j] >= a[j + 1]) j--;
+                if (j == -1)
+                    return false;
+                int k = n - 1;
+                while (a[j] >= a[k]) k--;
+                swap(a, j, k);
+                int l = j + 1, r = n - 1;
+                while (l < r)
+                    swap(a, l++, r--);
+            } while (j > m - 1);
+            return true;
+        }
+
+        public static void Accommodations()
+        {
+            Console.Write("Размещения из ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Console.Write("по ");
+            int m = Convert.ToInt32(Console.ReadLine());
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++)
+                a[i] = i + 1;
+            StreamWriter f = new StreamWriter("Accommodations.txt");
+            Print(a, m, f);
+            while (NextSet(a, n, m))
+                Print(a, m, f);
+            f.Close();
+            System.Diagnostics.Process.Start("Accommodations.txt");
+        }
+
+        //11 построить все подмножества
+        private static bool NextSetС(int[] a, int n, int m)
+        {
+            int k = m;
+            for (int i = k - 1; i >= 0; --i)
+                if (a[i] < n - k + i + 1)
+                {
+                    ++a[i];
+                    for (int j = i + 1; j < k; ++j)
+                        a[j] = a[j - 1] + 1;
+                    return true;
+                }
+            return false;
+        }
+
+        public static void Subsets()
+        {
+            Console.Write("Мощность исходного множества: ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            StreamWriter f = new StreamWriter("Subsets.txt");
+            for (int m = 1; m <= n; m++)
+            {            
+                int[] a = new int[n];
+                for (int i = 0; i < n; i++)
+                    a[i] = i + 1;
+                Print(a, m, f);
+                while (NextSetС(a, n, m))
+                    Print(a, m, f);
+            }
+            f.Close();
+            System.Diagnostics.Process.Start("Subsets.txt");
+        }
+
+        //12 построить все сочетания по k элементов
+        public static void Combinations()
+        {
+            Console.Write("Сочетания из ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Console.Write("по ");
+            int m = Convert.ToInt32(Console.ReadLine());
+            StreamWriter f = new StreamWriter("Combinations.txt");
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++)
+                a[i] = i + 1;
+            Print(a, m, f);
+            while (NextSetС(a, n, m))
+                Print(a, m, f);
+            f.Close();
+            System.Diagnostics.Process.Start("Combinations.txt");
+        }
+
+        //13 построить все сочетания с повторениями
+        private static bool NextSetCr(int[] a, int n, int m)
+        {
+            int j = m - 1;
+            while (j >= 0)
+                if(a[j] == n)
+                    j--;
+                else
+                    break;
+            if (j < 0) return false;
+            if (a[j] >= n)
+                j--;
+            a[j]++;
+            if (j == m - 1) return true;
+            for (int k = j + 1; k < m; k++)
+                a[k] = a[j];
+            return true;
+        }
+
+        public static void CombinationsR()
+        {
+            Console.Write("Сочетания из ");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Console.Write("по ");
+            int m = Convert.ToInt32(Console.ReadLine());
+            StreamWriter f = new StreamWriter("CombinationsR.txt");
+            int h = n > m ? n : m;
+            int[] a = new int[h];
+            for (int i = 0; i < h; i++)
+                a[i] = 1;
+            Print(a, m, f);
+            while (NextSetCr(a, n, m))
+                Print(a, m, f);
+            f.Close();
+            System.Diagnostics.Process.Start("CombinationsR.txt");
+        }
+
+        //14.1 алфавит {1, ..., 8} построить все размещения по 5 элементов и посчитать их кол-во
+        public static void Task14_1()
+        {
+            int n = 8;
+            int m = 5;
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++)
+                a[i] = i + 1;
+            StreamWriter f = new StreamWriter("Task14_1.txt");
+            Print(a, m, f);
+            int numberAcc = 1;
+            while (NextSet(a, n, m))
+            {
+                Print(a, m, f);
+                numberAcc++;
+            }
+            f.WriteLine(numberAcc);
+            f.Close();
+            System.Diagnostics.Process.Start("Task14_1.txt");
+        }
+
+        //14.2 слова длины 7, в которых ровно 1 символ повторяется 3 раза и ровно 1 символ повторяется 2 раза
+        public static void Task14_2()
+        {
+            int n = 8;
+            int m = 7;
+            StreamWriter f = new StreamWriter("AccomodationsR.txt");
+            int h = n > m ? n : m;
+            int[] a = new int[h];
+            for (int i = 0; i < h; i++)
+                a[i] = 1;
+            if (Check2(a, 7, 8))
+                Print(a, m, f);
+            while (NextSetAr(a, n, m))
+                if (Check2(a, 7, 8))
+                    Print(a, m, f);
+            f.Close();
+            System.Diagnostics.Process.Start("AccomodationsR.txt");
+        }
+
+        private static bool Check2(int[] a, int n, int m)
+        {
+            int count1;
+            int count2;
+            int digit1;
+            bool f = false;
+            for(int i = 1; i <= m; i++)
+            {
+                count1 = 0;
+                for (int j = 0; j < n; j++)
+                    if (a[j] == i)
+                        count1++;
+                if (count1 != 3)
+                    continue;
+                digit1 = i;
+                for (int k = 1; k <= m; k++)
+                {                
+                    count2 = 0;
+                    if (digit1 != k)
+                        for (int j = 0; j < n; j++)
+                            if (a[j] == k)
+                                count2++;
+                    if (count2 != 2)
+                        continue;
+                    if (f)
+                        return false;
+                    f = true;
+                }
+            }
+            return f;
+        }
+
+        //14.3
+        private static bool NextSetAr(int[] a, int n, int m)
+        {
+            int j = m - 1;
+            while (j >= 0 && a[j] == n) j--;
+            if (j < 0) return false;
+            if (a[j] >= n)
+                j--;
+            a[j]++;
+            if (j == m - 1) return true;
+            for (int k = j + 1; k < m; k++)
+                a[k] = 1;
+            return true;
+        }
+
+        public static void Task14_3()
+        {
+            int n = 8;
+            int m = 6;
+            StreamWriter f = new StreamWriter("AccomodationsR.txt");
+            int h = n > m ? n : m;
+            int[] a = new int[h];
+            for (int i = 0; i < h; i++)
+                a[i] = 1;
+            if (Check3(a, m))
+                Print(a, m, f);
+            while (NextSetAr(a, n, m))
+                if (Check3(a, m))
+                    Print(a, m, f);
+            f.Close();
+            System.Diagnostics.Process.Start("AccomodationsR.txt");
+        }
+
+        private static bool Check3(int[] a, int n)
+        {
+            int countTwo = 0;
+            for (int i = 0; i < n; i++)
+                if (a[i] == 2)
+                    countTwo++;
+            if (countTwo != 3)
+                return false;
+            else
+                return true;
+        }
+    }
+}
